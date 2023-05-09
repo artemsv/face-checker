@@ -1,23 +1,19 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SmartBase.FaceChecker.Library
 {
-    internal class FaceCaptureHelper
+    public class FaceCapturer : IDisposable
     {
         private readonly FaceCheckerParameters _parameters;
         private readonly VideoCapture _capture;
         private CascadeClassifier _face_cascade;
         private CascadeClassifier _eyes_cascade;
+        private bool _disposedValue;
 
-        public FaceCaptureHelper(FaceCheckerParameters parameters)
+        public FaceCapturer(FaceCheckerParameters parameters)
         {
             _parameters = parameters;
 
@@ -28,16 +24,11 @@ namespace SmartBase.FaceChecker.Library
             _eyes_cascade = new CascadeClassifier("./haarcascades/haarcascade_eye.xml");
         }
 
-        internal void Destroy()
-        {
-            _capture.Dispose();
-            _eyes_cascade.Dispose();
-            _face_cascade.Dispose();
-        }
-
         public Bitmap CapturedImage { get; private set; }
+        public int Width => _parameters.Width;
+        public int Height => _parameters.Height;
 
-        internal bool HandleNext()
+        internal bool GrabFrame()
         {
             using (var frameMat = _capture.RetrieveMat())
             {
@@ -74,6 +65,27 @@ namespace SmartBase.FaceChecker.Library
             }
 
             return true;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _capture.Dispose();
+                    _eyes_cascade.Dispose();
+                    _face_cascade.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

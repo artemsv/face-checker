@@ -8,34 +8,31 @@ namespace SmartBase.FaceChecker.Library
 {
     public partial class FaceCheckerForm : Form
     {
-        private readonly FaceCheckerParameters _parameters;
+        private readonly FaceCapturer _faceCapturer;
+        private readonly FaceCheckerFormParameters _faceCheckerFormParameters;
 
         internal Bitmap CapturedImage { get; private set; }
 
-        private FaceCaptureHelper _helper;
-
-        public FaceCheckerForm(FaceCheckerParameters parameters)
+        public FaceCheckerForm(FaceCapturer faceCapturer, FaceCheckerFormParameters faceCheckerFormParameters)
         {
             InitializeComponent();
-
-            _parameters = parameters;
-            _helper = new FaceCaptureHelper(_parameters);
+            _faceCapturer = faceCapturer;
+            _faceCheckerFormParameters = faceCheckerFormParameters;
         }
 
         private void VideoCaptureForm_Load(object sender, EventArgs e)
         {
-            Left = _parameters.Left;
-            Top = _parameters.Top;
+            Left = _faceCheckerFormParameters.Left;
+            Top = _faceCheckerFormParameters.Top;
 
-            if (!_helper.Start())
+            if (!_faceCapturer.Start())
             {
                 Close();
                 return;
             }
 
-            ClientSize = new System.Drawing.Size(_parameters.Width, _parameters.Height);
+            ClientSize = new Size(_faceCapturer.Width, _faceCapturer.Height);
 
-            ImageCaptureWorker.RunWorkerCompleted += ImageCaptureWorker_RunWorkerCompleted;
             ImageCaptureWorker.RunWorkerAsync();
         }
 
@@ -49,10 +46,7 @@ namespace SmartBase.FaceChecker.Library
             if (e.CloseReason == CloseReason.UserClosing)
                 e.Cancel = true;
             else
-            {
                 ImageCaptureWorker.CancelAsync();
-                _helper.Destroy();
-            }
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -61,20 +55,13 @@ namespace SmartBase.FaceChecker.Library
 
             while (!bgWorker.CancellationPending)
             {
-                if (!_helper.HandleNext())
-                    break;
-                
-                bgWorker.ReportProgress(0, _helper.CapturedImage);
+                if (!_faceCapturer.GrabFrame())
+                   // break;
+
+                CameraPictureBox.Image?.Dispose();
+                CameraPictureBox.Image = _faceCapturer.CapturedImage;
                 Thread.Sleep(100);
             }
-        }
-
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            CapturedImage = (Bitmap)e.UserState;
-
-            CameraPictureBox.Image?.Dispose();
-            CameraPictureBox.Image = CapturedImage;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace SmartBase.FaceChecker.TestHost
                 LogCallback = Log
             };
 
-            var faceChecker = new Library.FaceChecker(faceCheckerParameters);
+            var faceChecker = new Library.FaceCheckerHelper(faceCheckerParameters);
             var image = faceChecker.CaptureFace();
 
             image.Save("c:\\ffe.bmp");

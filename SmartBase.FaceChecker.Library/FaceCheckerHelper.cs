@@ -2,20 +2,27 @@
 
 namespace SmartBase.FaceChecker.Library
 {
-    public class FaceChecker
+    public class FaceCheckerHelper
     {
         private readonly FaceCheckerParameters _parameters;
         private FaceCheckerForm _form;
 
-        public FaceChecker(FaceCheckerParameters parameters)
+        public FaceCheckerHelper(FaceCheckerParameters parameters)
         {
             _parameters = parameters;
         }
 
         public Bitmap CaptureFace()
         {
-            _form = new FaceCheckerForm(_parameters);
-            _form.ShowDialog();
+            using (var helper = new FaceCapturer(_parameters))
+            {
+                _form = new FaceCheckerForm(helper, new FaceCheckerFormParameters
+                {
+                    Left = _parameters.Left,
+                    Top = _parameters.Top,
+                });
+                _form.ShowDialog();
+            }
 
             return _form.CapturedImage;
 

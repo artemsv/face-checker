@@ -44,7 +44,6 @@
             this.ImageCaptureWorker.WorkerReportsProgress = true;
             this.ImageCaptureWorker.WorkerSupportsCancellation = true;
             this.ImageCaptureWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.ImageCaptureWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             // 
             // FaceCheckerForm
             // 
