@@ -9,5 +9,6 @@ namespace SmartBase.FaceChecker.Library
         public int Width { get; set; }
         public int Height { get; set; }
         public Action<string> LogCallback { get; set; }
+        public int CloseTimeoutInMs { get; set; }
     }
 }

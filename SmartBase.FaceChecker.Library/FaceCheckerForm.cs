@@ -9,27 +9,32 @@ namespace SmartBase.FaceChecker.Library
     public partial class FaceCheckerForm : Form
     {
         private readonly FaceCapturer _faceCapturer;
-        private readonly FaceCheckerFormParameters _faceCheckerFormParameters;
+        private readonly FaceCheckerFormParameters _parameters;
+        private readonly System.Windows.Forms.Timer _closeTimer;
 
         internal Bitmap CapturedImage { get; private set; }
 
-        public FaceCheckerForm(FaceCapturer faceCapturer, FaceCheckerFormParameters faceCheckerFormParameters)
+        public FaceCheckerForm(FaceCapturer faceCapturer, FaceCheckerFormParameters parameters)
         {
             InitializeComponent();
             _faceCapturer = faceCapturer;
-            _faceCheckerFormParameters = faceCheckerFormParameters;
+            _parameters = parameters;
+
+            _closeTimer = new System.Windows.Forms.Timer();
+            _closeTimer.Interval = parameters.CloseTimeOutInMs;
+            _closeTimer.Tick += CloseTimer_Tick;
+            _closeTimer.Start();
+        }
+
+        private void CloseTimer_Tick(object sender, EventArgs e)
+        {
+            //DialogResult = DialogResult.Cancel;
         }
 
         private void VideoCaptureForm_Load(object sender, EventArgs e)
         {
-            Left = _faceCheckerFormParameters.Left;
-            Top = _faceCheckerFormParameters.Top;
-
-            if (!_faceCapturer.Start())
-            {
-                Close();
-                return;
-            }
+            Left = _parameters.Left;
+            Top = _parameters.Top;
 
             ClientSize = new Size(_faceCapturer.Width, _faceCapturer.Height);
 
@@ -38,7 +43,7 @@ namespace SmartBase.FaceChecker.Library
 
         private void ImageCaptureWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Close();
+            //Close();
         }
 
         private void VideoCaptureForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -56,10 +61,18 @@ namespace SmartBase.FaceChecker.Library
             while (!bgWorker.CancellationPending)
             {
                 if (!_faceCapturer.GrabFrame())
-                   // break;
+                    ;// DialogResult = DialogResult.OK;
 
-                CameraPictureBox.Image?.Dispose();
-                CameraPictureBox.Image = _faceCapturer.CapturedImage;
+                try
+                {
+                    CameraPictureBox.Image?.Dispose();
+                    CameraPictureBox.Image = _faceCapturer.CapturedImage;
+                }
+                catch(Exception ex)
+                {
+
+                }
+
                 Thread.Sleep(100);
             }
         }

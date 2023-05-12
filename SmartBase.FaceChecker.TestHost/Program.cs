@@ -18,13 +18,15 @@ namespace SmartBase.FaceChecker.TestHost
                 Height = screenHeight,
                 Left = (Screen.PrimaryScreen.Bounds.Width - screenWidth) /2,
                 Top = (Screen.PrimaryScreen.Bounds.Height - screenHeight) / 2,
-                LogCallback = Log
+                LogCallback = Log,
+                CloseTimeoutInMs = 15000
             };
 
-            var faceChecker = new Library.FaceCheckerHelper(faceCheckerParameters);
-            var image = faceChecker.CaptureFace();
+            var faceChecker = new Library.FaceChecker(faceCheckerParameters);
+            var res = faceChecker.CaptureFace();
 
-            image.Save("c:\\ffe.bmp");
+            if (res.Code == FaceCaptureResultCode.Success)
+                res.Image.Save("c:\\ffe.bmp");
         }
 
         private static void Log(string message)

@@ -1,10 +1,19 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SmartBase.FaceChecker.Library
 {
+    class FaceFeature
+    {
+        public Rect Face { get; set; }
+        public Rect[] Eyes { get; set; }
+    }
+
     public class FaceCapturer : IDisposable
     {
         private readonly FaceCheckerParameters _parameters;
@@ -30,18 +39,32 @@ namespace SmartBase.FaceChecker.Library
 
         internal bool GrabFrame()
         {
+            List<FaceFeature> features = new List<FaceFeature>();
+
             using (var frameMat = _capture.RetrieveMat())
             {
                 if (!frameMat.Empty())
                 {
-                    var rects = _face_cascade.DetectMultiScale(frameMat, 1.1, 5, HaarDetectionTypes.ScaleImage, new OpenCvSharp.Size(30, 30));
-                    if (rects.Length > 0)
-                    {
-                        Cv2.Rectangle(frameMat, rects[0], Scalar.Red);
-                        CapturedImage = BitmapConverter.ToBitmap(frameMat);
+                    var gray = ConvertGrayScale(frameMat);
+                    var faces = DetectFace(gray);
 
-                        return false;
+                    foreach (var rect in faces)
+                    {
+                        //Get the region of interest where you can find facial features
+                        var face_roi = gray[rect];
+                        //Detect eyes
+                        var eyes = DetectEyes(face_roi);
+
+                        //Record the facial features in a list
+                        features.Add(new FaceFeature()
+                        {
+                            Face = rect,
+                            Eyes = eyes
+                        });
                     }
+
+                    //Mark the detected feature on the original frame
+                    MarkFeatures(features, frameMat);
 
                     CapturedImage = BitmapConverter.ToBitmap(frameMat);
                 }
@@ -52,9 +75,32 @@ namespace SmartBase.FaceChecker.Library
             return true;
         }
 
+        private void MarkFeatures(IList<FaceFeature> features,  Mat image)
+        {
+            foreach (FaceFeature feature in features)
+            {
+                Cv2.Rectangle(image, feature.Face, new Scalar(0, 255, 0), thickness: 1);
+                var face_region = image[feature.Face];
+                foreach (var eye in feature.Eyes)
+                {
+                    Cv2.Rectangle(face_region, eye, new Scalar(255, 0, 0), thickness: 1);
+                }
+            }
+        }
+
+        private Rect[] DetectFace(Mat mat)
+        {
+            return _face_cascade.DetectMultiScale(mat, 1.1, 5, HaarDetectionTypes.ScaleImage, new OpenCvSharp.Size(30, 30));
+        }
+
+        private Rect[] DetectEyes(Mat mat)
+        {
+            return _eyes_cascade.DetectMultiScale(mat);
+        }
+
         internal bool Start()
         {
-            _capture.Open(0, VideoCaptureAPIs.ANY);
+            _capture.Open(0, VideoCaptureAPIs.DSHOW);
             _capture.Set(VideoCaptureProperties.FrameWidth, _parameters.Width);
             _capture.Set(VideoCaptureProperties.FrameHeight, _parameters.Height);
 
@@ -86,6 +132,14 @@ namespace SmartBase.FaceChecker.Library
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private Mat ConvertGrayScale(Mat image)
+        {
+            Mat gray = new Mat();
+            Cv2.CvtColor(image, gray, ColorConversionCodes.BGR2GRAY);
+
+            return gray;
         }
     }
 }
