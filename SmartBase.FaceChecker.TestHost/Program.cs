@@ -26,7 +26,7 @@ namespace SmartBase.FaceChecker.TestHost
             var res = faceChecker.CaptureFace();
 
             if (res.Code == FaceCaptureResultCode.Success)
-                res.Image.Save("c:\\ffe.bmp");
+                res.Image.Save("c:\\image.bmp");
         }
 
         private static void Log(string message)
