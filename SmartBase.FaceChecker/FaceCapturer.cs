@@ -3,6 +3,7 @@ using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace SmartBase.FaceChecker
 {
@@ -35,9 +36,10 @@ namespace SmartBase.FaceChecker
         public int Width => _parameters.Width;
         public int Height => _parameters.Height;
 
-        internal bool GrabFrame()
+        public bool GrabFrame()
         {
             var features = new List<FaceFeature>();
+            var res = false;
 
             using (var frameMat = _capture.RetrieveMat())
             {
@@ -57,9 +59,13 @@ namespace SmartBase.FaceChecker
                             Face = faceRect,
                             Eyes = eyes
                         });
+
+                        // we found both eyes
+                        res = eyes.Length == 2;
                     }
 
-                    DrawFacesAndEyes(features, frameMat);
+                    if (_parameters.HighlightFaceAndEyes)
+                        DrawFacesAndEyes(features, frameMat);
 
                     CapturedImage = frameMat.ToBitmap();
                 }
@@ -67,7 +73,7 @@ namespace SmartBase.FaceChecker
                     _parameters.LogCallback("Mat is empty");
             }
 
-            return true;
+            return res;
         }
 
         private void DrawFacesAndEyes(IList<FaceFeature> features, Mat image)

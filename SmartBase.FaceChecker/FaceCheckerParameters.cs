@@ -10,5 +10,6 @@ namespace SmartBase.FaceChecker
         public int Height { get; set; }
         public Action<string> LogCallback { get; set; }
         public int CloseTimeoutInMs { get; set; }
+        public bool HighlightFaceAndEyes { get; set; }
     }
 }

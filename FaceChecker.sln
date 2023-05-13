@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartBase.FaceChecker", "SmartBase.FaceChecker.Library\SmartBase.FaceChecker.csproj", "{C8C7B6D9-D618-49B1-ABB9-5DA9FE584502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartBase.FaceChecker", "SmartBase.FaceChecker\SmartBase.FaceChecker.csproj", "{C8C7B6D9-D618-49B1-ABB9-5DA9FE584502}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartBase.FaceChecker.TestHost", "SmartBase.FaceChecker.TestHost\SmartBase.FaceChecker.TestHost.csproj", "{E573ABDA-C2CA-4605-91E0-CBAEEE9550B1}"
 EndProject

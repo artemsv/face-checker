@@ -1,5 +1,4 @@
-﻿using SmartBase.FaceChecker.Library;
-using System;
+﻿using System;
 using System.Windows.Forms;
 
 namespace SmartBase.FaceChecker.TestHost
@@ -16,10 +15,13 @@ namespace SmartBase.FaceChecker.TestHost
             {
                 Width = screenWidth,
                 Height = screenHeight,
-                Left = (Screen.PrimaryScreen.Bounds.Width - screenWidth) /2,
+                Left = (Screen.PrimaryScreen.Bounds.Width - screenWidth) / 2,
                 Top = (Screen.PrimaryScreen.Bounds.Height - screenHeight) / 2,
                 LogCallback = Console.WriteLine,
-                CloseTimeoutInMs = 15000
+                CloseTimeoutInMs = 15000,
+
+                // debug feature
+                HighlightFaceAndEyes = true
             };
 
             var faceChecker = new FaceChecker(faceCheckerParameters);

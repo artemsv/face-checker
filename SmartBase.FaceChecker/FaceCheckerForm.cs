@@ -28,7 +28,7 @@ namespace SmartBase.FaceChecker.Library
 
         private void CloseTimer_Tick(object sender, EventArgs e)
         {
-            //DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
         }
 
         private void VideoCaptureForm_Load(object sender, EventArgs e)
@@ -43,7 +43,7 @@ namespace SmartBase.FaceChecker.Library
 
         private void ImageCaptureWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //Close();
+            Close();
         }
 
         private void VideoCaptureForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -60,8 +60,8 @@ namespace SmartBase.FaceChecker.Library
 
             while (!bgWorker.CancellationPending)
             {
-                if (!_faceCapturer.GrabFrame())
-                    ;// DialogResult = DialogResult.OK;
+                if (_faceCapturer.GrabFrame())
+                    DialogResult = DialogResult.OK;
 
                 try
                 {
@@ -70,7 +70,7 @@ namespace SmartBase.FaceChecker.Library
                 }
                 catch(Exception ex)
                 {
-
+                    // todo: log an exception
                 }
 
                 Thread.Sleep(100);
