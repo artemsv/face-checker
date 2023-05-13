@@ -1,4 +1,4 @@
-﻿namespace SmartBase.FaceChecker.Library
+﻿namespace SmartBase.FaceChecker
 {
     public class FaceCheckerFormParameters
     {

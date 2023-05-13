@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SmartBase.FaceChecker.Library
+namespace SmartBase.FaceChecker
 {
     public enum FaceCaptureResultCode
     {

@@ -10,24 +10,24 @@ There are several usage cases:
 ### Embedded WinForms Form 
 
 ```csharp
-    const int screenWidth = 640;
-    const int screenHeight = 480;
+const int screenWidth = 640;
+const int screenHeight = 480;
 
-    var faceCheckerParameters = new FaceCheckerParameters
-    {
-        Width = screenWidth,
-        Height = screenHeight,
-        Left = (Screen.PrimaryScreen.Bounds.Width - screenWidth) /2,
-        Top = (Screen.PrimaryScreen.Bounds.Height - screenHeight) / 2,
-        LogCallback = Console.WriteLine,
-        CloseTimeoutInMs = 15000
-    };
+var faceCheckerParameters = new FaceCheckerParameters
+{
+    Width = screenWidth,
+    Height = screenHeight,
+    Left = (Screen.PrimaryScreen.Bounds.Width - screenWidth) /2,
+    Top = (Screen.PrimaryScreen.Bounds.Height - screenHeight) / 2,
+    LogCallback = Console.WriteLine,
+    CloseTimeoutInMs = 15000
+};
 
-    var faceChecker = new Library.FaceChecker(faceCheckerParameters);
-    var res = faceChecker.CaptureFace();
+var faceChecker = new FaceChecker(faceCheckerParameters);
+var res = faceChecker.CaptureFace();
 
-    if (res.Code == FaceCaptureResultCode.Success)
-        res.Image.Save("c:\\image.bmp");
+if (res.Code == FaceCaptureResultCode.Success)
+    res.Image.Save("c:\\image.bmp");
 ```
 
 ## License

@@ -71,9 +71,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartBase.FaceChecker.Library\SmartBase.FaceChecker.Library.csproj">
+    <ProjectReference Include="..\SmartBase.FaceChecker.Library\SmartBase.FaceChecker.csproj">
       <Project>{C8C7B6D9-D618-49B1-ABB9-5DA9FE584502}</Project>
-      <Name>SmartBase.FaceChecker.Library</Name>
+      <Name>SmartBase.FaceChecker</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

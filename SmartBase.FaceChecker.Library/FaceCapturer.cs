@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace SmartBase.FaceChecker.Library
+namespace SmartBase.FaceChecker
 {
     class FaceFeature
     {
@@ -49,7 +49,7 @@ namespace SmartBase.FaceChecker.Library
                     foreach (var faceRect in faceRects)
                     {
                         var faceMat = grayMat[faceRect];
-                        
+
                         var eyes = DetectEyes(faceMat);
 
                         features.Add(new FaceFeature()
@@ -61,7 +61,7 @@ namespace SmartBase.FaceChecker.Library
 
                     DrawFacesAndEyes(features, frameMat);
 
-                    CapturedImage = BitmapConverter.ToBitmap(frameMat);
+                    CapturedImage = frameMat.ToBitmap();
                 }
                 else
                     _parameters.LogCallback("Mat is empty");

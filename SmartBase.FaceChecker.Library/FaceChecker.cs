@@ -1,6 +1,7 @@
-﻿using System.Windows.Forms;
+﻿using SmartBase.FaceChecker.Library;
+using System.Windows.Forms;
 
-namespace SmartBase.FaceChecker.Library
+namespace SmartBase.FaceChecker
 {
     public class FaceChecker
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartBase.FaceChecker.Library
+namespace SmartBase.FaceChecker
 {
     public class FaceCheckerParameters
     {
