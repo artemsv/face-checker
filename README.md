@@ -5,7 +5,30 @@ FaceChecker is a .NET 4.7.2 library that is intended to be used as an authentica
 
 ## Usage
 
-There are several usage cases 
+There are several usage cases:
+
+### Embedded WinForms Form 
+
+```csharp
+    const int screenWidth = 640;
+    const int screenHeight = 480;
+
+    var faceCheckerParameters = new FaceCheckerParameters
+    {
+        Width = screenWidth,
+        Height = screenHeight,
+        Left = (Screen.PrimaryScreen.Bounds.Width - screenWidth) /2,
+        Top = (Screen.PrimaryScreen.Bounds.Height - screenHeight) / 2,
+        LogCallback = Console.WriteLine,
+        CloseTimeoutInMs = 15000
+    };
+
+    var faceChecker = new Library.FaceChecker(faceCheckerParameters);
+    var res = faceChecker.CaptureFace();
+
+    if (res.Code == FaceCaptureResultCode.Success)
+        res.Image.Save("c:\\image.bmp");
+```
 
 ## License
 
