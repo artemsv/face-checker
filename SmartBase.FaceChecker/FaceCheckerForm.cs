@@ -60,13 +60,13 @@ namespace SmartBase.FaceChecker.Library
 
             while (!bgWorker.CancellationPending)
             {
-                if (_faceCapturer.GrabFrame())
+                if (_faceCapturer.CaptureFace())
                     DialogResult = DialogResult.OK;
 
                 try
                 {
                     CameraPictureBox.Image?.Dispose();
-                    CameraPictureBox.Image = _faceCapturer.CapturedImage;
+                    CameraPictureBox.Image = _faceCapturer.FaceImage;
                 }
                 catch(Exception ex)
                 {

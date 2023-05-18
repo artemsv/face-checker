@@ -3,16 +3,10 @@ using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace SmartBase.FaceChecker
 {
-    class FaceFeature
-    {
-        public Rect Face { get; set; }
-        public Rect[] Eyes { get; set; }
-    }
-
+    public delegate bool ImageCapturedEventHandler(Mat frameMat, List<FaceFeature> features, bool detected);
     public class FaceCapturer : IDisposable
     {
         private readonly FaceCheckerParameters _parameters;
@@ -20,7 +14,13 @@ namespace SmartBase.FaceChecker
         private CascadeClassifier _faceCascade;
         private CascadeClassifier _eyesCascade;
         private bool _disposedValue;
+        private ImageCapturedEventHandler _imageCapturedEventHandler;
 
+        public Bitmap FaceImage { get; private set; }
+        public int Width => _parameters.Width;
+        public int Height => _parameters.Height;
+
+        #region Ctors
         public FaceCapturer(FaceCheckerParameters parameters)
         {
             _parameters = parameters;
@@ -30,13 +30,21 @@ namespace SmartBase.FaceChecker
 
             _faceCascade = new CascadeClassifier("./haarcascades/haarcascade_frontalface_default.xml");
             _eyesCascade = new CascadeClassifier("./haarcascades/haarcascade_eye.xml");
+        } 
+        #endregion
+
+        #region Public
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
-        public Bitmap CapturedImage { get; private set; }
-        public int Width => _parameters.Width;
-        public int Height => _parameters.Height;
-
-        public bool GrabFrame()
+        /// <summary>
+        /// Makes an attempt to grab the image and detect the face.
+        /// </summary>
+        /// <returns>True if the face as captured successfully.</returns>
+        public bool CaptureFace()
         {
             var features = new List<FaceFeature>();
             var res = false;
@@ -64,10 +72,12 @@ namespace SmartBase.FaceChecker
                         res = eyes.Length == 2;
                     }
 
+                    ProcessImageCallback(frameMat, features, ref res);
+
                     if (_parameters.HighlightFaceAndEyes)
                         DrawFacesAndEyes(features, frameMat);
 
-                    CapturedImage = frameMat.ToBitmap();
+                    FaceImage = frameMat.ToBitmap();
                 }
                 else
                     _parameters.LogCallback("Mat is empty");
@@ -76,6 +86,33 @@ namespace SmartBase.FaceChecker
             return res;
         }
 
+
+        public event ImageCapturedEventHandler ImageCaptured
+        {
+            add { _imageCapturedEventHandler += value; }
+            remove { _imageCapturedEventHandler -= value; }
+        }
+
+        /// <summary>
+        /// Initializes video capturing.
+        /// </summary>
+        public bool Start()
+        {
+            _capture.Open(0, VideoCaptureAPIs.DSHOW);
+            _capture.Set(VideoCaptureProperties.FrameWidth, _parameters.Width);
+            _capture.Set(VideoCaptureProperties.FrameHeight, _parameters.Height);
+
+            if (!_capture.IsOpened())
+            {
+                _parameters.LogCallback("Failed to initialize VideoCapture");
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region NonPublic
         private void DrawFacesAndEyes(IList<FaceFeature> features, Mat image)
         {
             foreach (FaceFeature feature in features)
@@ -100,21 +137,6 @@ namespace SmartBase.FaceChecker
             return _eyesCascade.DetectMultiScale(mat);
         }
 
-        internal bool Start()
-        {
-            _capture.Open(0, VideoCaptureAPIs.DSHOW);
-            _capture.Set(VideoCaptureProperties.FrameWidth, _parameters.Width);
-            _capture.Set(VideoCaptureProperties.FrameHeight, _parameters.Height);
-
-            if (!_capture.IsOpened())
-            {
-                _parameters.LogCallback("Failed to initialize VideoCapture");
-                return false;
-            }
-
-            return true;
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -130,12 +152,6 @@ namespace SmartBase.FaceChecker
             }
         }
 
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
         private Mat ConvertGrayScale(Mat image)
         {
             var gray = new Mat();
@@ -143,5 +159,12 @@ namespace SmartBase.FaceChecker
 
             return gray;
         }
+
+        private void ProcessImageCallback(Mat frameMat, List<FaceFeature> features, ref bool detected)
+        {
+            if (_imageCapturedEventHandler != null)
+                detected = _imageCapturedEventHandler(frameMat, features, detected);
+        }
+        #endregion
     }
 }

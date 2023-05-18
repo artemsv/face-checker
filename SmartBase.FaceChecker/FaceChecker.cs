@@ -26,7 +26,7 @@ namespace SmartBase.FaceChecker
                     {
                         case DialogResult.OK:
                             result.Code = FaceCaptureResultCode.Success;
-                            result.Image = faceCapturer.CapturedImage;
+                            result.Image = faceCapturer.FaceImage;
                             break;
                         case DialogResult.Abort:
                             result.Code = FaceCaptureResultCode.Timeout;

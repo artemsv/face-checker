@@ -9,6 +9,8 @@ There are several usage cases:
 
 ### Embedded WinForms Form 
 
+Prefferred way to use the library if the client needs to display captured face. 
+
 ```csharp
 const int screenWidth = 640;
 const int screenHeight = 480;
@@ -28,6 +30,32 @@ var res = faceChecker.CaptureFace();
 
 if (res.Code == FaceCaptureResultCode.Success)
     res.Image.Save("c:\\image.bmp");
+```
+
+### Using raw FaceCapturer 
+
+Gives the full access to the underlying face capturing functionality. Client needs to organize image processing loop. 
+
+```csharp
+var faceCheckerParameters = new FaceCapturerParameters
+{
+    Width = 640,
+    Height = 480,
+    LogCallback = Console.WriteLine,
+};
+
+using (var faceCapturer = new FaceCapturer(parameters))
+{
+    faceCapturer.Start();
+
+    while (!faceCapturer.CaptureFace())
+    {
+        Task.Delay(100);
+    }
+
+    if (faceCapturer.FaceImage != null)
+        faceCapturer.FaceImage.Save("c:\\face.bmp");
+}
 ```
 
 ## License
