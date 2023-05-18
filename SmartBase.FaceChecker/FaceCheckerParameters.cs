@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartBase.FaceChecker
+﻿namespace SmartBase.FaceChecker
 {
     public class FaceCheckerParameters : FaceCapturerParameters
     {
